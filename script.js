@@ -138,14 +138,26 @@ document.addEventListener('DOMContentLoaded', function() {
       Object.keys(questions).forEach((key, index) => {
         let question = questions[key][currentPlayerType];
         
-        // تحويل الصيغة إلى "أنت" فقط للاعب الأول
-        if (prefix === 'player1') {
-          question = question
-            .replace("أخوك","ك")
-            .replace("أختك","ك")
-            .replace("والدك","ك")
-            .replace("والدتك","ك");
-        }
+       
+        // تحويل السؤال للاعب الأول إلى كاف المخاطب
+if (prefix === 'player1') {
+  question = question
+    .replace("أخوك", "ك")
+    .replace("أختك", "ك")
+    .replace("والدك", "ك")
+    .replace("والدتك", "ك")
+    .replace("أخاك", "ك")
+    .replace("أختكِ", "ك")
+    .replace("ولدك", "ك")
+    .replace("طعام أخوك", "طعامك")
+    .replace("لون أخوك", "لونك")
+    .replace("لون أختك", "لونك")
+    .replace("ما هو فصل أخوك المفضل؟", "ما هو فصلك المفضل؟")
+    .replace("ما هو فصل أختك المفضل؟", "ما هو فصلك المفضل؟")
+    .replace("ما هو فصل والدك المفضل؟", "ما هو فصلك المفضل؟")
+    .replace("ما هو فصل والدتك المفضل؟", "ما هو فصلك المفضل؟");
+}
+
         
         const questionDiv = document.createElement('div');
         questionDiv.className = 'question-card';
