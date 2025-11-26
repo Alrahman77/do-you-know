@@ -22,6 +22,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let player1Answers = {};
     let player2Answers = {};
 
+    const player1QuestionMap = {
+  food: "أكلتك المفضلة؟",
+  color: "لونك المفضل؟",
+  movie: "فصلك المفضل؟",
+  hobby: "هوايتك المفضلة؟",
+  fear: "المادة التي تفضلها؟",
+  memory: "أجمل ذكرى معك؟",
+  habit: "العادة المزعجة عندك؟",
+  gift: "أفضل هدية ممكن تفرحك؟",
+  song: "حيوانك المفضل؟",
+  skill: "الفنان الذي تفضله؟"
+};
+
     const questions = {
       food: {
         brother: "ما هي أكلة أخوك المفضلة؟",
@@ -84,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mother: "ما هو الفنان الذي تفضله والدتك؟"
       }
     };
+    
 
     // دالة تحويل للاعب الأول
     function convertQuestionToPlayer1(q) {
@@ -123,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    function createQuestions(container, prefix) {
+    if (prefix === 'player1') q = player1QuestionMap[key];
       container.innerHTML = '';
       Object.keys(questions).forEach(key => {
         let q = questions[key][currentPlayerType];
