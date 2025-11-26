@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة هل أنت حافظ؟</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../fonts.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <div class="container">
+        <header>
+            <h1><span>هل أنت حافظ؟</span></h1>
+            <p class="subtitle">اختبر مدى معرفتك بأفراد عائلتك</p>
+            <button id="themeToggle" class="theme-btn">🌙</button>
+        </header>
+
+        <main>
+            <!-- شاشة البداية -->
+            <section id="start-screen" class="screen active">
+                <div class="logo">
+                    <div class="logo-circle">
+                        <span><img src="../images/Do-you-Know-logo - Copy.jpg"></span>
+                    </div>
+                </div>
+                <button id="startBtn" class="main-btn">ابدأ اللعبة</button>
+            </section>
+
+            <!-- شاشة اختيار اللاعب -->
+            <section id="player-screen" class="screen">
+                <h2>اختر من تريد اختباره</h2>
+                <div class="players-grid">
+                    <div class="player-card" data-player="brother">
+                        <div class="player-icon">🧑</div>
+                        <h3>أخوك</h3>
+                    </div>
+                    <div class="player-card" data-player="sister">
+                        <div class="player-icon">👧</div>
+                        <h3>أختك</h3>
+                    </div>
+                    <div class="player-card" data-player="father">
+                        <div class="player-icon">👨</div>
+                        <h3>والدك</h3>
+                    </div>
+                    <div class="player-card" data-player="mother">
+                        <div class="player-icon">👩</div>
+                        <h3>والدتك</h3>
+                    </div>
+                </div>
+                <button class="back-btn">رجوع</button>
+            </section>
+
+            <!-- شاشة الأسئلة للاعب الأول -->
+            <section id="question-screen-1" class="screen">
+                <h2>أجب عن الأسئلة عن <span id="current-player-name">أخوك</span></h2>
+                <form id="player1-form" autocomplete="off">
+                    <div class="question-container">
+                        <!-- سيتم إضافة الأسئلة ديناميكيًا هنا -->
+                    </div>
+                    <button type="submit" class="main-btn">التالي</button>
+                    <button type="button" class="back-btn">رجوع</button>
+                </form>
+            </section>
+
+            <!-- شاشة الانتقال للاعب الثاني -->
+            <section id="transition-screen" class="screen">
+                <div class="transition-content">
+                    <h2>حان الآن دور <span id="next-player-name">أخوك</span> للإجابة!</h2>
+                    <p>أعط الجهاز للاعب الثاني للإجابة على نفس الأسئلة</p>
+                    <div class="countdown">3</div>
+                </div>
+            </section>
+
+            <!-- شاشة الأسئلة للاعب الثاني -->
+            <section id="question-screen-2" class="screen">
+                <h2>أجب عن الأسئلة عن <span id="current-player-name-2">أخوك</span></h2>
+                <form id="player2-form" autocomplete="off">
+                    <div class="question-container">
+                        <!-- سيتم إضافة الأسئلة ديناميكيًا هنا -->
+                    </div>
+                    <button type="submit" class="main-btn">عرض النتيجة</button>
+                    <button type="button" class="back-btn">رجوع</button>
+                </form>
+            </section>
+
+            <!-- شاشة النتائج -->
+            <section id="result-screen" class="screen">
+                <h2>النتيجة النهائية</h2>
+                <div class="result-circle">
+                    <div class="circle-progress"></div>
+                    <div class="circle-content">
+                        <span id="score-percentage">0%</span>
+                    </div>
+                </div>
+                <p id="result-message">نتيجتك: ممتاز!</p>
+                <div class="answers-details">
+                    <!-- سيتم عرض تفاصيل الإجابات هنا -->
+                </div>
+                <button id="restartBtn" class="main-btn">العب مرة أخرى</button>
+                <button id="shareBtn" class="share-btn">مشاركة النتيجة</button>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
