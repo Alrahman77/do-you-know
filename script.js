@@ -141,10 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // تحويل الصيغة إلى "أنت" فقط للاعب الأول
         if (prefix === 'player1') {
           question = question
-            .replace("أخوك", "أنت")
-            .replace("أختك", "أنت")
-            .replace("والدك", "أنت")
-            .replace("والدتك", "أنت");
+            .replace("أخوك","ك")
+            .replace("أختك","ك")
+            .replace("والدك","ك")
+            .replace("والدتك","ك");
         }
         
         const questionDiv = document.createElement('div');
