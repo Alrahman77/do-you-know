@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPlayerTitle = '';
     let player1Answers = {};
     let player2Answers = {};
-    
-    // كائن الأسئلة المعدل (10 أسئلة لكل علاقة)
+
+    // الأسئلة الأساسية
     const questions = {
       food: {
         brother: "ما هي أكلة أخوك المفضلة؟",
@@ -82,12 +82,23 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       skill: {
         brother: "ما هو الفنان الذي يفضله أخوك؟",
-        sister: "ما هو الفنان الذي نفضله أختك؟",
+        sister: "ما هو الفنان الذي تفضله أختك؟",
         father: "ما هو الفنان الذي يفضله والدك؟",
         mother: "ما هو الفنان الذي تفضله والدتك؟"
       }
     };
-  
+
+    // 💡 دالة تحويل الصيغة إلى كاف المخاطب
+    function convertToSecondPerson(question) {
+        return question
+            .replace(/أخوك/g, "ك")
+            .replace(/أختك/g, "ك")
+            .replace(/والدك/g, "ك")
+            .replace(/والدتك/g, "ك")
+            .replace(/مع ك/g, "معك") 
+            .replace(/عند ك/g, "عندك");
+    }
+
     // تبديل الوضع المظلم/الفاتح
     themeToggle.addEventListener('click', function() {
       document.body.classList.toggle('dark-theme');
@@ -95,27 +106,25 @@ document.addEventListener('DOMContentLoaded', function() {
       themeToggle.textContent = isDark ? '☀' : '🌙';
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
-    
+
     // تحميل الوضع المحفوظ
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') {
       document.body.classList.add('dark-theme');
       themeToggle.textContent = '☀';
     }
-    
+
     // عرض الشاشة المطلوبة
     function showScreen(screenId) {
-      screens.forEach(screen => {
-        screen.classList.remove('active');
-      });
+      screens.forEach(screen => screen.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
     }
-    
+
     // بدء اللعبة
     startBtn.addEventListener('click', function() {
       showScreen('player-screen');
     });
-    
+
     // اختيار اللاعب
     playerCards.forEach(card => {
       card.addEventListener('click', function() {
@@ -124,72 +133,51 @@ document.addEventListener('DOMContentLoaded', function() {
         currentPlayerName.textContent = currentPlayerTitle;
         currentPlayerName2.textContent = currentPlayerTitle;
         nextPlayerName.textContent = currentPlayerTitle;
-        
-        // إنشاء الأسئلة
+
         createQuestions(questionContainer1, 'player1');
         showScreen('question-screen-1');
       });
     });
-    
-    // إنشاء الأسئلة (معدلة للتعامل مع الكائن الجديد)
+
+    // إنشاء الأسئلة
     function createQuestions(container, prefix) {
       container.innerHTML = '';
-      
-      Object.keys(questions).forEach((key, index) => {
+
+      Object.keys(questions).forEach(key => {
         let question = questions[key][currentPlayerType];
-        
-if (prefix === 'player1') {
 
-  question = question
-    .replace(/أخوك/g, "ك")
-    .replace(/أختك/g, "ك")
-    .replace(/والدك/g, "ك")
-    .replace(/والدتك/g, "ك")
-    .replace(/أخاك/g, "ك")
-    .replace(/أختكِ/g, "ك")
-    .replace(/ولدك/g, "ك");
+        // 👈 اللاعب الأول: تحويل لصيغة المخاطب
+        if (prefix === 'player1') {
+            question = convertToSecondPerson(question);
+        }
 
-  question = question
-    .replace(/ما هو فصل .* المفضل؟/, "ما هو فصلك المفضل؟")
-    .replace(/ما هو الحيوان .* المفضلة؟/, "ما هو حيوانك المفضل؟")
-    .replace(/ما هي المادة الذي .* يفضلها؟/, "ما هي مادتك المفضلة؟");
-}
-
-
-        
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'question-card';
-        questionDiv.innerHTML = `
-          <label for="${prefix}-${key}">${question}</label>
-          <input type="text" id="${prefix}-${key}" name="${prefix}-${key}" 
-                 required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        const div = document.createElement('div');
+        div.className = "question-card";
+        div.innerHTML = `
+            <label>${question}</label>
+            <input type="text" id="${prefix}-${key}" required autocomplete="off">
         `;
-        
-        container.appendChild(questionDiv);
+        container.appendChild(div);
       });
     }
-    
-    // تقديم إجابات اللاعب الأول
+
+    // حفظ إجابات اللاعب الأول
     player1Form.addEventListener('submit', function(e) {
       e.preventDefault();
-      
-      // جمع الإجابات
+
       Object.keys(questions).forEach(key => {
         player1Answers[key] = document.getElementById(`player1-${key}`).value;
       });
-      
-      // الانتقال لشاشة الانتظار
+
       showScreen('transition-screen');
-      
-      // بدء العد التنازلي
       let count = 3;
       const countdown = document.querySelector('.countdown');
       countdown.textContent = count;
-      
+
       const timer = setInterval(() => {
         count--;
         countdown.textContent = count;
-        
+
         if (count <= 0) {
           clearInterval(timer);
           createQuestions(questionContainer2, 'player2');
@@ -197,116 +185,57 @@ if (prefix === 'player1') {
         }
       }, 1000);
     });
-    
-    // تقديم إجابات اللاعب الثاني
+
+    // حفظ إجابات اللاعب الثاني
     player2Form.addEventListener('submit', function(e) {
       e.preventDefault();
-      
-      // جمع الإجابات
+
       Object.keys(questions).forEach(key => {
         player2Answers[key] = document.getElementById(`player2-${key}`).value;
       });
-      
-      // حساب النتيجة
+
       calculateResults();
       showScreen('result-screen');
     });
-    
-    // حساب النتائج (معدلة للتعامل مع الكائن الجديد)
+
+    // حساب النتائج
     function calculateResults() {
       let correct = 0;
-      const totalQuestions = Object.keys(questions).length;
+      const total = Object.keys(questions).length;
       answersDetails.innerHTML = '';
-      
+
       Object.keys(questions).forEach(key => {
         const isCorrect = player1Answers[key].toLowerCase() === player2Answers[key].toLowerCase();
         if (isCorrect) correct++;
-        
-        const originalQuestion = questions[key][currentPlayerType];
-        const answerItem = document.createElement('div');
-        answerItem.className = `answer-item ${isCorrect ? 'correct' : 'wrong'}`;
-        answerItem.innerHTML = `
-          <h4>${originalQuestion}</h4>
-          <p><strong>الإجابة الصحيحة:</strong> ${player1Answers[key]}</p>
-          <p><strong>إجابتك:</strong> ${player2Answers[key]}</p>
+
+        const q = questions[key][currentPlayerType];
+        const div = document.createElement('div');
+        div.className = `answer-item ${isCorrect ? 'correct' : 'wrong'}`;
+        div.innerHTML = `
+            <h4>${q}</h4>
+            <p><strong>الإجابة الصحيحة:</strong> ${player1Answers[key]}</p>
+            <p><strong>إجابتك:</strong> ${player2Answers[key]}</p>
         `;
-        
-        answersDetails.appendChild(answerItem);
+        answersDetails.appendChild(div);
       });
-      
-      const percentage = Math.round((correct / totalQuestions) * 100);
-      scorePercentage.textContent = `${percentage}%`;
-      
-      // تحديث دائرة النتيجة
-      const degrees = (percentage / 100) * 360;
-      circleProgress.style.transform = `rotate(${degrees}deg)`;
-      
-      // عرض رسالة النتيجة
+
+      const percentage = Math.round((correct / total) * 100);
+      scorePercentage.textContent = percentage + "%";
+
+      circleProgress.style.transform = `rotate(${(percentage / 100) * 360}deg)`;
+
       if (percentage >= 80) {
-        resultMessage.textContent = `ممتاز! أنت حافظ ${currentPlayerTitle} `;
-        resultMessage.style.color = 'var(--correct-color)';
+          resultMessage.textContent = `ممتاز! أنت حافظ ${currentPlayerTitle}`;
       } else if (percentage >= 50) {
-        resultMessage.textContent = `جيد، ولكن يمكنك معرفة المزيد عن ${currentPlayerTitle}`;
-        resultMessage.style.color = 'var(--primary-color)';
+          resultMessage.textContent = `تمام، بس لسة محتاج تعرف أكتر عن ${currentPlayerTitle}`;
       } else {
-        resultMessage.textContent = `للأسف أنت مش حافظ ${currentPlayerTitle} !`;
-        resultMessage.style.color = 'var(--wrong-color)';
+          resultMessage.textContent = `للأسف… أنت مش حافظ ${currentPlayerTitle}`;
       }
     }
-    
-    // إعادة تشغيل اللعبة
-    restartBtn.addEventListener('click', function() {
+
+    restartBtn.addEventListener('click', () => {
       player1Answers = {};
       player2Answers = {};
       showScreen('player-screen');
     });
-    
-    // مشاركة النتيجة
-    shareBtn.addEventListener('click', function() {
-      const shareText = `حصلت على ${scorePercentage.textContent} في لعبة "هل أنت حافظ؟" - جربها أنت أيضًا!`;
-      
-      if (navigator.share) {
-        navigator.share({
-          title: 'لعبة هل أنت حافظ؟',
-          text: shareText,
-          url: window.location.href
-        }).catch(err => {
-          console.error('Error sharing:', err);
-          copyToClipboard(shareText);
-        });
-      } else {
-        copyToClipboard(shareText);
-      }
-    });
-    
-    // نسخ النتيجة
-    function copyToClipboard(text) {
-      const input = document.createElement('input');
-      input.value = text;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      alert('تم نسخ النتيجة إلى الحافظة! يمكنك مشاركتها الآن.');
-    }
-    
-    // أحداث أزرار الرجوع
-    document.querySelectorAll('.back-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const currentScreen = this.closest('.screen').id;
-        
-        if (currentScreen === 'player-screen') {
-        showScreen('start-screen');
-        } else if (currentScreen === 'question-screen-1') {
-        showScreen('player-screen');
-        } else if (currentScreen === 'question-screen-2') {
-        showScreen('transition-screen');
-        }
-    });
-    });
-
-    // منع أي سلوك غير مرغوب فيه
-    if (window.history.replaceState) {
-    window.history.replaceState(null, null, window.location.href);
-    }
 });
