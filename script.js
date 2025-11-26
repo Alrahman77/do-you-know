@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // العناصر الأساسية
     const themeToggle = document.getElementById('themeToggle');
     const startBtn = document.getElementById('startBtn');
     const restartBtn = document.getElementById('restartBtn');
@@ -17,14 +16,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const scorePercentage = document.getElementById('score-percentage');
     const circleProgress = document.querySelector('.circle-progress');
     const answersDetails = document.querySelector('.answers-details');
-    
-    // المتغيرات العامة
+
     let currentPlayerType = '';
     let currentPlayerTitle = '';
     let player1Answers = {};
     let player2Answers = {};
 
-    // الأسئلة الأساسية
     const questions = {
       food: {
         brother: "ما هي أكلة أخوك المفضلة؟",
@@ -51,10 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
         mother: "ما هي هواية والدتك المفضلة؟"
       },
       fear: {
-        brother: "ما هي المادة الذي يفضلها أخوك؟",
-        sister: "ما هي المادة الذي تفضلها أختك؟",
-        father: "ما هي المادة الذي يفضلها والدك؟",
-        mother: "ما هي المادة الذي تفضلها والدتك؟"
+        brother: "ما هي المادة التي يفضلها أخوك؟",
+        sister: "ما هي المادة التي تفضلها أختك؟",
+        father: "ما هي المادة التي يفضلها والدك؟",
+        mother: "ما هي المادة التي تفضلها والدتك؟"
       },
       memory: {
         brother: "ما هي أجمل ذكرى مع أخوك؟",
@@ -75,10 +72,10 @@ document.addEventListener('DOMContentLoaded', function() {
         mother: "ما هي أفضل هدية ممكن تفرح والدتك؟"
       },
       song: {
-        brother: "ما هو الحيوان أخوك المفضلة؟",
-        sister: "ما هو الحيوان أختك المفضلة؟",
-        father: "ما هو الحيوان والدك المفضلة؟",
-        mother: "ما هو الحيوان والدتك المفضلة؟"
+        brother: "ما هو الحيوان المفضل لدى أخوك؟",
+        sister: "ما هو الحيوان المفضل لدى أختك؟",
+        father: "ما هو الحيوان المفضل لدى والدك؟",
+        mother: "ما هو الحيوان المفضل لدى والدتك؟"
       },
       skill: {
         brother: "ما هو الفنان الذي يفضله أخوك؟",
@@ -88,44 +85,32 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     };
 
-    // 💡 دالة تحويل الصيغة إلى كاف المخاطب
-    function convertToSecondPerson(question) {
-        return question
-            .replace(/أخوك/g, "ك")
-            .replace(/أختك/g, "ك")
-            .replace(/والدك/g, "ك")
-            .replace(/والدتك/g, "ك")
-            .replace(/مع ك/g, "معك") 
-            .replace(/عند ك/g, "عندك");
+    // دالة تحويل للاعب الأول
+    function convertQuestionToPlayer1(q) {
+      return q
+        .replace(/أخوك/g, "ك")
+        .replace(/أختك/g, "ك")
+        .replace(/والدك/g, "ك")
+        .replace(/والدتك/g, "ك")
+        .replace(/مع ك/g, "معك")
+        .replace(/عند ك/g, "عندك");
     }
 
     // تبديل الوضع المظلم/الفاتح
     themeToggle.addEventListener('click', function() {
       document.body.classList.toggle('dark-theme');
-      const isDark = document.body.classList.contains('dark-theme');
-      themeToggle.textContent = isDark ? '☀' : '🌙';
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeToggle.textContent = document.body.classList.contains('dark-theme') ? '☀' : '🌙';
+      localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
     });
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme'), themeToggle.textContent = '☀';
 
-    // تحميل الوضع المحفوظ
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-theme');
-      themeToggle.textContent = '☀';
-    }
-
-    // عرض الشاشة المطلوبة
     function showScreen(screenId) {
-      screens.forEach(screen => screen.classList.remove('active'));
+      screens.forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
     }
 
-    // بدء اللعبة
-    startBtn.addEventListener('click', function() {
-      showScreen('player-screen');
-    });
+    startBtn.addEventListener('click', () => showScreen('player-screen'));
 
-    // اختيار اللاعب
     playerCards.forEach(card => {
       card.addEventListener('click', function() {
         currentPlayerType = this.getAttribute('data-player');
@@ -133,109 +118,63 @@ document.addEventListener('DOMContentLoaded', function() {
         currentPlayerName.textContent = currentPlayerTitle;
         currentPlayerName2.textContent = currentPlayerTitle;
         nextPlayerName.textContent = currentPlayerTitle;
-
         createQuestions(questionContainer1, 'player1');
         showScreen('question-screen-1');
       });
     });
 
-    // إنشاء الأسئلة
     function createQuestions(container, prefix) {
       container.innerHTML = '';
-
       Object.keys(questions).forEach(key => {
-        let question = questions[key][currentPlayerType];
-
-        // 👈 اللاعب الأول: تحويل لصيغة المخاطب
-        if (prefix === 'player1') {
-            question = convertToSecondPerson(question);
-        }
-
+        let q = questions[key][currentPlayerType];
+        if (prefix === 'player1') q = convertQuestionToPlayer1(q);
         const div = document.createElement('div');
         div.className = "question-card";
-        div.innerHTML = `
-            <label>${question}</label>
-            <input type="text" id="${prefix}-${key}" required autocomplete="off">
-        `;
+        div.innerHTML = `<label>${q}</label><input type="text" id="${prefix}-${key}" required autocomplete="off">`;
         container.appendChild(div);
       });
     }
 
-    // حفظ إجابات اللاعب الأول
     player1Form.addEventListener('submit', function(e) {
       e.preventDefault();
-
-      Object.keys(questions).forEach(key => {
-        player1Answers[key] = document.getElementById(`player1-${key}`).value;
-      });
-
+      Object.keys(questions).forEach(key => player1Answers[key] = document.getElementById(`player1-${key}`).value);
       showScreen('transition-screen');
       let count = 3;
       const countdown = document.querySelector('.countdown');
       countdown.textContent = count;
-
       const timer = setInterval(() => {
-        count--;
-        countdown.textContent = count;
-
-        if (count <= 0) {
-          clearInterval(timer);
-          createQuestions(questionContainer2, 'player2');
-          showScreen('question-screen-2');
-        }
+        count--; countdown.textContent = count;
+        if (count <= 0) clearInterval(timer), createQuestions(questionContainer2, 'player2'), showScreen('question-screen-2');
       }, 1000);
     });
 
-    // حفظ إجابات اللاعب الثاني
     player2Form.addEventListener('submit', function(e) {
       e.preventDefault();
-
-      Object.keys(questions).forEach(key => {
-        player2Answers[key] = document.getElementById(`player2-${key}`).value;
-      });
-
+      Object.keys(questions).forEach(key => player2Answers[key] = document.getElementById(`player2-${key}`).value);
       calculateResults();
       showScreen('result-screen');
     });
 
-    // حساب النتائج
     function calculateResults() {
       let correct = 0;
-      const total = Object.keys(questions).length;
       answersDetails.innerHTML = '';
-
       Object.keys(questions).forEach(key => {
         const isCorrect = player1Answers[key].toLowerCase() === player2Answers[key].toLowerCase();
         if (isCorrect) correct++;
-
-        const q = questions[key][currentPlayerType];
         const div = document.createElement('div');
         div.className = `answer-item ${isCorrect ? 'correct' : 'wrong'}`;
-        div.innerHTML = `
-            <h4>${q}</h4>
-            <p><strong>الإجابة الصحيحة:</strong> ${player1Answers[key]}</p>
-            <p><strong>إجابتك:</strong> ${player2Answers[key]}</p>
-        `;
+        div.innerHTML = `<h4>${questions[key][currentPlayerType]}</h4>
+                         <p><strong>الإجابة الصحيحة:</strong> ${player1Answers[key]}</p>
+                         <p><strong>إجابتك:</strong> ${player2Answers[key]}</p>`;
         answersDetails.appendChild(div);
       });
-
-      const percentage = Math.round((correct / total) * 100);
-      scorePercentage.textContent = percentage + "%";
-
-      circleProgress.style.transform = `rotate(${(percentage / 100) * 360}deg)`;
-
-      if (percentage >= 80) {
-          resultMessage.textContent = `ممتاز! أنت حافظ ${currentPlayerTitle}`;
-      } else if (percentage >= 50) {
-          resultMessage.textContent = `تمام، بس لسة محتاج تعرف أكتر عن ${currentPlayerTitle}`;
-      } else {
-          resultMessage.textContent = `للأسف… أنت مش حافظ ${currentPlayerTitle}`;
-      }
+      const percent = Math.round((correct / Object.keys(questions).length) * 100);
+      scorePercentage.textContent = percent + "%";
+      circleProgress.style.transform = `rotate(${(percent / 100) * 360}deg)`;
+      if (percent >= 80) resultMessage.textContent = `ممتاز! أنت حافظ ${currentPlayerTitle}`;
+      else if (percent >= 50) resultMessage.textContent = `تمام، بس لسة محتاج تعرف أكتر عن ${currentPlayerTitle}`;
+      else resultMessage.textContent = `للأسف… أنت مش حافظ ${currentPlayerTitle}`;
     }
 
-    restartBtn.addEventListener('click', () => {
-      player1Answers = {};
-      player2Answers = {};
-      showScreen('player-screen');
-    });
+    restartBtn.addEventListener('click', () => { player1Answers = {}; player2Answers = {}; showScreen('player-screen'); });
 });
