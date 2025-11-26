@@ -138,25 +138,23 @@ document.addEventListener('DOMContentLoaded', function() {
       Object.keys(questions).forEach((key, index) => {
         let question = questions[key][currentPlayerType];
         
-       
-        // تحويل السؤال للاعب الأول إلى كاف المخاطب
 if (prefix === 'player1') {
+
   question = question
-    .replace("أخوك", "ك")
-    .replace("أختك", "ك")
-    .replace("والدك", "ك")
-    .replace("والدتك", "ك")
-    .replace("أخاك", "ك")
-    .replace("أختكِ", "ك")
-    .replace("ولدك", "ك")
-    .replace("طعام أخوك", "طعامك")
-    .replace("لون أخوك", "لونك")
-    .replace("لون أختك", "لونك")
-    .replace("ما هو فصل أخوك المفضل؟", "ما هو فصلك المفضل؟")
-    .replace("ما هو فصل أختك المفضل؟", "ما هو فصلك المفضل؟")
-    .replace("ما هو فصل والدك المفضل؟", "ما هو فصلك المفضل؟")
-    .replace("ما هو فصل والدتك المفضل؟", "ما هو فصلك المفضل؟");
+    .replace(/أخوك/g, "ك")
+    .replace(/أختك/g, "ك")
+    .replace(/والدك/g, "ك")
+    .replace(/والدتك/g, "ك")
+    .replace(/أخاك/g, "ك")
+    .replace(/أختكِ/g, "ك")
+    .replace(/ولدك/g, "ك");
+
+  question = question
+    .replace(/ما هو فصل .* المفضل؟/, "ما هو فصلك المفضل؟")
+    .replace(/ما هو الحيوان .* المفضلة؟/, "ما هو حيوانك المفضل؟")
+    .replace(/ما هي المادة الذي .* يفضلها؟/, "ما هي مادتك المفضلة؟");
 }
+
 
         
         const questionDiv = document.createElement('div');
